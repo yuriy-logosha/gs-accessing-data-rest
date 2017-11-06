@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import service.repositories.LoanRepository;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -25,16 +26,15 @@ public class ApplicationTests {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private PersonRepository personRepository;
+	private LoanRepository loanRepository;
 
 	@Before
 	public void deleteAllBeforeTests() throws Exception {
-		personRepository.deleteAll();
+        loanRepository.deleteAll();
 	}
 
 	@Test
 	public void shouldReturnRepositoryIndex() throws Exception {
-
 		mockMvc.perform(get("/")).andDo(print())
                 .andExpect(status().isOk()).andExpect(
 				jsonPath("$._links.loans").exists());
@@ -42,7 +42,6 @@ public class ApplicationTests {
 
 	@Test
 	public void shouldCreateLoan() throws Exception {
-
 		mockMvc.perform(post("/loans")
 				.content("{\"ssn\": \"123456-00000\", \"term\":5, \"amount\": 100}"))
                 .andExpect(status().isCreated())
@@ -51,7 +50,6 @@ public class ApplicationTests {
 
 	@Test
 	public void shouldRetrieveLoan() throws Exception {
-
 		MvcResult mvcResult = mockMvc.perform(post("/loans")
                 .content("{\"ssn\": \"123456-00000\", \"term\":5, \"amount\": 100}"))
                 .andExpect(status().isCreated()).andReturn();
