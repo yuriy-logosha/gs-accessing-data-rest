@@ -6,38 +6,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.awt.print.Book;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
+import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 
 @SpringBootApplication
-public class Application implements CommandLineRunner {
-	private static final Logger logger = LoggerFactory.getLogger(Application.class);
+public class Application {
+	private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
-	private final PersonRepository personRepository;
+	public static final int MAX_POSSIBLE_AMOUNT = 2000;
 
-	@Autowired
-	public Application(PersonRepository personRepository) {
-		this.personRepository = personRepository;
-	}
+    public static final double INTEREST_FACTOR_PER_WEEK = 1.5;
+
+    public static final double INTEREST = 0.5;
 
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 
-	@Override
-	public void run(String... strings) throws Exception {
-		// save a couple of books
-		List<Person> persons = new ArrayList<>();
-		persons.add(new Person("Iurii", "Logosha"));
-		persons.add(new Person("Omar", "Epps"));
-		persons.add(new Person("Dr.", "House"));
-		personRepository.save(persons);
-
-		// fetch all persons
-		for (Person person : personRepository.findAll()) {
-			logger.info(person.toString());
-		}
-	}
 }
