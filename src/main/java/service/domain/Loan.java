@@ -1,5 +1,6 @@
 package service.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.validator.constraints.NotEmpty;
 import service.Application;
 
@@ -19,24 +20,26 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @NotEmpty
+    @NotEmpty(message = "{validation.ssn.empty}")
+    @JsonIgnore
     private String ssn;
 
-    @NotNull
+    @NotNull(message = "{validation.amount.empty}")
     @Max(Application.MAX_POSSIBLE_AMOUNT)
     private BigDecimal amount;
 
-    @NotNull
+    @NotNull(message = "{validation.interest.empty}")
     private Double interest;
 
-    @NotNull
+    @NotNull(message = "{validation.term.empty}")
     @Min(1)
     private Integer term;
 
-    @NotEmpty
+    @NotEmpty(message = "{validation.ip.empty}")
+    @JsonIgnore
     private String ip;
 
-    @NotNull
+    @NotNull(message = "{validation.createdAt}")
     private Timestamp createdAt;
 
     @OneToMany(mappedBy = "loan")
