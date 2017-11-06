@@ -4,22 +4,33 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import service.domain.Loan;
+import service.domain.LoanExcerpt;
 
 import java.util.List;
 
 @CrossOrigin
-@RepositoryRestResource
+@RepositoryRestResource(excerptProjection = LoanExcerpt.class)
 public interface LoanRepository extends CrudRepository<Loan, Long> {
 
-    List<Loan> findBySsn(@Param("ssn") String ssn);
-
+    @RestResource(exported = false)
     List<Loan> findByIp(@Param("ip") String ip);
 
-    Loan findById(@Param("id") long id);
+    @Override
+    @PostAuthorize("returnObject!=null?returnObject.ssn == principal.username:true")
+    Loan findOne(@Param("id") Long id);
 
+    @Override
+    @PostFilter("filterObject.ssn == principal.username")
+    List<Loan> findAll();
 
+    @Override
+    @PostAuthorize("returnObject!=null?returnObject.ssn == principal.username:true")
+    Loan save(Loan loan);
 
     @Override
     @RestResource(exported = false)
@@ -28,5 +39,9 @@ public interface LoanRepository extends CrudRepository<Loan, Long> {
     @Override
     @RestResource(exported = false)
     public void delete(Long id);
+
+    @Override
+    @RestResource(exported = false)
+    public void deleteAll();
 
 }

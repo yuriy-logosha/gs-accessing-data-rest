@@ -8,6 +8,7 @@ import service.Application;
 import service.domain.Loan;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
 
 @Component
 @RepositoryEventHandler(Loan.class)
@@ -18,7 +19,9 @@ public class LoanHandler {
 
     @HandleBeforeCreate
     public void handleBeforeCreate(Loan loan) {
+        Principal principal = request.getUserPrincipal();
         loan.setIp(request.getRemoteAddr());
         loan.setInterest(Application.INTEREST);
+        loan.setSsn(principal.getName());
     }
 }
