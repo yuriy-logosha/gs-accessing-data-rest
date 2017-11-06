@@ -1,4 +1,4 @@
-package service.repositories;
+package service;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
@@ -18,4 +18,9 @@ public interface ExtensionRepository extends CrudRepository<Extension, Long> {
     @Override
     @RestResource(exported = false)
     public void delete(Long id);
+
+    @Override
+    @RestResource(exported = false)
+    public void deleteAll();
+
 }
