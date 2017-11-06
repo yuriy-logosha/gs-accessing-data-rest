@@ -23,7 +23,8 @@ public class IPValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-        List<Loan> byIp = loanRepository.findByIp(((Loan) o).getIp());
+        String currentIp = ((Loan) o).getIp();
+        List<Loan> byIp = loanRepository.findByIp(currentIp);
 
         if (byIp == null) {
             return;
@@ -34,7 +35,7 @@ public class IPValidator implements Validator {
                 .count();
 
         if ( count > 2) {
-            errors.reject("error.message","Not valid IP for today.");
+            errors.rejectValue("ip", "error.ip");
         }
     }
 }
