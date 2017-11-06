@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import service.domain.Loan;
-import service.repositories.LoanRepository;
+import service.LoanRepository;
 
 import java.time.Instant;
 import java.util.List;
