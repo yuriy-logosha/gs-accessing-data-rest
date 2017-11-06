@@ -7,20 +7,19 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import service.repositories.LoanRepository;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ApplicationTests {
+public class ModuleTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -28,37 +27,33 @@ public class ApplicationTests {
 	@Autowired
 	private LoanRepository loanRepository;
 
+    @Autowired
+    private ExtensionRepository extensionRepository;
+
 	@Before
 	public void deleteAllBeforeTests() throws Exception {
         loanRepository.deleteAll();
+        extensionRepository.deleteAll();
 	}
 
 	@Test
-	public void shouldReturnRepositoryIndex() throws Exception {
-		mockMvc.perform(get("/")).andDo(print())
-                .andExpect(status().isOk()).andExpect(
-				jsonPath("$._links.loans").exists());
-	}
-
-	@Test
-	public void shouldCreateLoan() throws Exception {
-		mockMvc.perform(post("/loans")
-				.content("{\"ssn\": \"123456-00000\", \"term\":5, \"amount\": 100}"))
-                .andExpect(status().isCreated())
-                .andExpect(header().string("Location", containsString("loans/")));
-	}
-
-	@Test
-	public void shouldRetrieveLoan() throws Exception {
+    @WithMockUser("170483-18001")
+	public void shouldCreateRetrieveLoanWithExtension() throws Exception {
 		MvcResult mvcResult = mockMvc.perform(post("/loans")
-                .content("{\"ssn\": \"123456-00000\", \"term\":5, \"amount\": 100}"))
+                .content("{\"term\":5, \"amount\": 200}"))
                 .andExpect(status().isCreated()).andReturn();
 
 		String location = mvcResult.getResponse().getHeader("Location");
-		mockMvc.perform(get(location)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.ssn").value("123456-00000"))
+
+        mockMvc.perform(post("/extensions")
+                .content("{\"term\":5, \"interest\": 1.5, \"loan\": \"" + location + "\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", containsString("extensions/")));
+
+        mockMvc.perform(get(location)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.term").value("5"))
-                .andExpect(jsonPath("$.amount").value("100.0"));
+                .andExpect(jsonPath("$.amount").value("200.0"));
 	}
+
 
 }
