@@ -39,7 +39,7 @@ public class Loan {
     @NotNull
     private Timestamp createdAt;
 
-    @OneToMany
+    @OneToMany(mappedBy = "loan")
     private List<Extension> extensions;
 
     public Loan() {

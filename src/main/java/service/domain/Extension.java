@@ -27,6 +27,7 @@ public class Extension {
     private Double interest;
 
     @ManyToOne
+    @JoinColumn(name = "loan_id", nullable = false, updatable = false)
     private Loan loan;
 
     public Extension() {
